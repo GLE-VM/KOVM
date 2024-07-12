@@ -17,7 +17,6 @@ size_t ndeps; \
 typedef struct
 {
     ValueCommon
-    dtvm_word tid; // LSB of enum tid is the infinite? bit
     dtvm_word ret;
     dtvm_word len;
     dtvm_word* code;
@@ -32,6 +31,7 @@ typedef struct
 {
     Kind kind;
     dtvm_word size;
+    dtvm_word tid; // LSB of enum tid is the infinite? bit; for types it's irrelevant
     As as;
 } Value;
 

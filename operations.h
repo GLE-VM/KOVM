@@ -6,8 +6,8 @@ There's no such thing as calling convention: arguments are simply specialised wi
 ISA:
 
 Special:
-typeof $addr: r0 <- @($addr + 2)
-sizeof $addr: r0 <- @($addr + 1)
+o typeof $addr: r0 <- @($addr + 2)
+o sizeof $addr: r0 <- @($addr + 1)
 at $dst, $addr: if r:idx >= $addr.size then outofbounds else $dst <- @($addr + r:idx) fi (* $addr must contain a slice *)
 atnochk $dst, $addr: $dst <- @($addr + r:idx)
 member $dst, $addr, offs: $dst <- @($addr + offs) (* $addr must contain a value of a slice type *)
@@ -29,15 +29,7 @@ slctypoffs $dst, #typeid, offs: $dst <- $types[#typeid] + offs
 complit $dst, #typeid, prevlitidx: r0 <- $dst; r1 <- prevlitidx; call $types[#typeid].formulaptr
 
 Common:
-mov $dst, $src: $dst <- $src (* $dst must contain a pointer *)
-mov $dst, imm:  $dst <- imm
-mov $dst, r:reg: $dst <- r:reg
-cpy $dst, $src: $dst <- @$src (* typeof $dst == typeof $src *)
-cpy $dst, litidx:  $dst <- litidx (* typeof $dst == typeof litidx *)
-cpy $dst, r:reg: $dst <- @r:reg
-ldr r:reg
-str r:reg
-swp
+
 
 Comparators:
 isin litidx, $slc: if litidx in ($slc.elems)..($slc+$slc.size) then 1 else 0 fi
@@ -85,7 +77,14 @@ typedef enum
     OP_THROW,
     OP_CATCH,
     OP_MOV,
-    OP_CPY
+    OP_CPY,
+    OP_LDR,
+    OP_STR,
+    OP_LDPMR,
+    OP_STPMR,
+    OP_SWP,
+    OP_TYPEOF,
+    OP_SIZEOF
 } Mnemonic;
 
 DTVM_Error op_nop(dtvm_word* args)
@@ -175,6 +174,51 @@ DTVM_Error op_cpy(dtvm_word* args)
     if(args[0] == 0 || args[1] == 0) return DTVM_PTR0;
     if(args[0] >= MAX_MEMORY || args[1] >= MAX_MEMORY) return DTVM_NOADDR;
     curr_proc->ram[args[0]] = curr_proc->ram[args[1]];
+    return DTVM_SUCCESS;
+}
+DTVM_Error op_ldr(dtvm_word* args)
+{
+    if(args[0] >= NREGS) return DTVM_NOREG;
+    curr_proc->regs[args[0]] = curr_proc->ram[REG_STORE_BASE + args[0]];
+    return DTVM_SUCCESS;
+}
+DTVM_Error op_str(dtvm_word* args)
+{
+    if(args[0] >= NREGS) return DTVM_NOREG;
+    curr_proc->ram[REG_STORE_BASE + args[0]] = curr_proc->regs[args[0]];
+    return DTVM_SUCCESS;
+}
+DTVM_Error op_ldpmr(dtvm_word* args)
+{
+    if(args[0] >= NPMREGS) return DTVM_NOREG;
+    curr_proc->pmregs[args[0]] = curr_proc->ram[REG_STORE_BASE + PMREG_STORE_OFFSET + args[0]];
+    return DTVM_SUCCESS;
+}
+DTVM_Error op_stpmr(dtvm_word* args)
+{
+    if(args[0] >= NPMREGS) return DTVM_NOREG;
+    curr_proc->ram[REG_STORE_BASE + PMREG_STORE_OFFSET + args[0]] = curr_proc->pmregs[args[0]];
+    return DTVM_SUCCESS;
+}
+DTVM_Error op_swp(dtvm_word* args)
+{
+    if(args[0] >= MAX_MEMORY || args[1] >= MAX_MEMORY) return DTVM_NOADDR;
+    if(args[0] == 0 || args[1] == 0) return DTVM_PTR0;
+    curr_proc->ram[args[0]] ^= curr_proc->ram[args[1]] ^= curr_proc->ram[args[0]] ^= curr_proc->ram[args[1]];
+    return DTVM_SUCCESS;
+}
+DTVM_Error op_typeof(dtvm_word* args)
+{
+    if(args[0] + 2 >= MAX_MEMORY) return DTVM_NOADDR;
+    if(args[0] == 0) return DTVM_PTR0;
+    curr_proc->regs[REG_R0] = curr_proc->ram[args[0] + 2];
+    return DTVM_SUCCESS;
+}
+DTVM_Error op_sizeof(dtvm_word* args)
+{
+    if(args[0] + 1 >= MAX_MEMORY) return DTVM_NOADDR;
+    if(args[0] == 0) return DTVM_PTR0;
+    curr_proc->regs[REG_R0] = curr_proc->ram[args[0] + 1];
     return DTVM_SUCCESS;
 }
 

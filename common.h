@@ -10,7 +10,8 @@ typedef enum
     DTVM_PTR0,
     DTVM_CSUDFLOW,
     DTVM_CSOVFLOW,
-    DTVM_NOADDR
+    DTVM_NOADDR,
+    DTVM_NOREG
 } DTVM_Error;
 
 const char* dtvm_get_error_msg(DTVM_Error err)
@@ -22,6 +23,7 @@ const char* dtvm_get_error_msg(DTVM_Error err)
     case DTVM_CSUDFLOW:return "Call stack underflow";
     case DTVM_CSOVFLOW:return "Call stack overflow";
     case DTVM_NOADDR:  return "Attempted to access value at a non-existent address";
+    case DTVM_NOREG:   return "Attempted to access non-existent register";
     }
 }
 
@@ -47,6 +49,9 @@ typedef uint64_t dtvm_word;
 #define REG_PM1 1
 #define REG_PM2 2
 #define REG_PMR 3
+
+#define REG_STORE_BASE (MAX_MEMORY - 11)
+#define PMREG_STORE_OFFSET NREGS
 
 typedef struct
 {
@@ -90,7 +95,7 @@ void dtvm_proc_throw(Process* self, dtvm_word sig);
 
 Instruction opcodes[NOPCODES] = {
     op_nop, op_halt, op_jmp, op_jmpshort, op_repeat, op_call, op_ret, op_throw, op_catch,
-    op_mov, op_cpy
+    op_mov, op_cpy, op_ldr, op_str, op_ldpmr, op_stpmr, op_swp, op_typeof, op_sizeof
 };
 
 #endif
