@@ -3,40 +3,36 @@
 
 #include<stdlib.h>
 #include "common.h"
+#include "signals.h"
 
-dtvm_word dtvm_decode_arg(Opcode* const opcode, uint16_t nth)
-{
-    dtvm_word val = curr_ram[curr_ip + nth];
-    switch(opcode->addr_modes[nth])
-    {
-    case AMODE_LIT: return val;
-    case AMODE_IDX: return val + curr_regs.idx;
-    }
-}
-const size_t opcode_appetite = sizeof(Opcode) / sizeof(dtvm_word);
 
-Operation dtvm_fetch_instr()
+typedef struct
 {
-    Opcode opcode = *(Opcode*)(curr_ram + curr_ip);
-    curr_ip += opcode_appetite;
-    Operation op;
-    op.instr = opcode.instr;
-    size_t i = 0;
-    for(i = 0; i < MAX_ARGS; i++)
-    {
-        if(opcode.addr_modes[i] == AMODE_NOARG) break;
-        if(curr_sig_mode && op.instr != OP_CATCH)
-            op.args[i] = 0;
-        else
-            op.args[i] = dtvm_decode_arg(&opcode, i);
-    }
-    curr_ip += i;
-    return op;
-}
+    dtvm_word instr;
+    uint8_t addr_modes[MAX_ARGS];
+} Opcode;
 
-DTVM_Error dtvm_execute(Operation op)
+typedef enum
 {
-    return opcodes[op.instr](op.args);
-}
+    AMODE_NOARG, AMODE_LIT, AMODE_IDX
+} AddrMode;
+#define ARITY_0 (AMODE_NOARG << 24) | (AMODE_NOARG << 16) | (AMODE_NOARG << 8) | AMODE_NOARG
+#define ARITY_1 (AMODE_NOARG << 16) | (AMODE_NOARG <<  8) | AMODE_NOARG
+#define ARITY_2 (AMODE_NOARG <<  8) | AMODE_NOARG
+#define ARITY_3 AMODE_NOARG
+
+
+typedef struct
+{
+    dtvm_word instr;
+    dtvm_word args[MAX_ARGS];
+} Operation;
+
+
+dtvm_word dtvm_decode_arg(Opcode* const opcode, uint16_t nth);
+
+Operation dtvm_fetch_instr();
+
+DTVM_Signal dtvm_execute(Operation op);
 
 #endif

@@ -1,9 +1,12 @@
 #include<stdio.h>
-#include<stdlib.h>
 #include<netinet/in.h>
 
 #include "common.h"
 #include "vm.h"
+#include "opcode.h"
+#include "operations.h"
+#include "signals.h"
+
 // ifc? indexed function count? independent function counter? if counter?
 
 int main(int argc, char** argv)
@@ -42,10 +45,10 @@ int main(int argc, char** argv)
     dtvm_init(&dtvm, nprocesses);
 
     dtvm_word idx = dtvm_load(&dtvm, image, 80);
-    DTVM_Error result;
+    DTVM_Signal result;
     if(result = dtvm_run(&dtvm, idx))
     {
-        printf("Error: %s\n", dtvm_get_error_msg(result));
+        printf("Error: %s\n", dtvm_get_signal_msg(result));
         printf("Near IP: %ld\n", curr_ip);
         printf("Memcell: %ld\n", curr_ram[curr_ip]);
     }

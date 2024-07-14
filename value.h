@@ -2,7 +2,6 @@
 #define DTVM_VALUE_H
 
 #include<stdlib.h>
-
 #include "common.h"
 
 
@@ -14,61 +13,59 @@ typedef enum
 } Kind;
 
 
-#define ValueCommon \
-size_t ndeps; \
-    dtvm_word deps;
 
-typedef struct
+struct Value
 {
     Kind kind;
     dtvm_word size;
     dtvm_word tid; // LSB of enum tid is the infinite? bit; for types it's irrelevant
+    size_t ndeps;
+    dtvm_word* deps;
     union
     {
         struct
         {
-            ValueCommon
             dtvm_word ret;
             dtvm_word len;
             dtvm_word* code;
         } enum_literal;
         struct
         {
-            ValueCommon
             dtvm_word nelems;
             struct Value* values;
         } slice_literal;
         struct
         {
-            ValueCommon
             dtvm_word ntypes;
             dtvm_word* typeids;
         } type_slice_literal;
         struct
         {
-            ValueCommon
             dtvm_word parent_tid;
         } type_value;
     } as;
-} Value;
-
+};
+typedef struct Value Value; 
 
 typedef struct
 {
-    ValueCommon
+    size_t ndeps;
+    dtvm_word* deps;
     dtvm_word ret;
     dtvm_word len;
     dtvm_word* code;
 } EnumLiteralValue;
 typedef struct
 {
-    ValueCommon
+    size_t ndeps;
+    dtvm_word* deps;
     dtvm_word nelems;
     Value* values;
 } SliceLiteralValue;
 typedef struct
 {
-    ValueCommon
+    size_t ndeps;
+    dtvm_word* deps;
     dtvm_word ntypes;
     dtvm_word* typeids;
 } TypeSliceLiteralValue;
