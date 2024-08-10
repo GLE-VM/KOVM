@@ -12,7 +12,7 @@ typedef struct
 
 void dtvm_init(DTVM* self, dtvm_word nprocs);
 
-dtvm_word dtvm_load(DTVM* self, dtvm_word* image, size_t img_len);
+dtvm_word dtvm_load(DTVM* self, dtvm_byte* image, size_t img_len);
 
 void dtvm_unload(DTVM* self, dtvm_word idx);
 

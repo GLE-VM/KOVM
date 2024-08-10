@@ -10,6 +10,7 @@ typedef enum
     DTVM_NOADDR,
     DTVM_NOREG,
     DTVM_ILLKND,
+    DTVM_ILLTYP,
     DTVM_ILLIDX,
     DTVM_NOSPACE
 } DTVM_Signal;

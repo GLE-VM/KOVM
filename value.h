@@ -4,71 +4,67 @@
 #include<stdlib.h>
 #include "common.h"
 
+#define TPID 0
+#define DEPS 4
+#define SLIC 8
+#define BLCK 12
 
-typedef enum
+#define VFIELD_FIRST 0xFFFFFFFF00000000
+
+#define ByteToWordEndianess(field, val)\
+dtvm_word field = ntohl(*(dtvm_word*)(val->field))
+
+#define ByteToWordEndianessTemp(field, layout_type, baseaddr)\
+dtvm_word field = ntohl(*(dtvm_word*)((layout_type*)(curr_ram + baseaddr))->field)
+typedef struct
 {
-    KND_ENUM_LITERAL,
-    KND_SLICE,
-    KND_TYPE_SLICE
-} Kind;
-
-
-
-struct Value
-{
-    Kind kind;
-    dtvm_word size;
-    dtvm_word tid; // LSB of enum tid is the infinite? bit; for types it's irrelevant
-    size_t ndeps;
-    dtvm_word* deps;
-    union
-    {
-        struct
-        {
-            dtvm_word ret;
-            dtvm_word len;
-            dtvm_word* code;
-        } enum_literal;
-        struct
-        {
-            dtvm_word nelems;
-            struct Value* values;
-        } slice_literal;
-        struct
-        {
-            dtvm_word ntypes;
-            dtvm_word* typeids;
-        } type_slice_literal;
-        struct
-        {
-            dtvm_word parent_tid;
-        } type_value;
-    } as;
-};
-typedef struct Value Value; 
+    dtvm_byte value[4*8];
+} LiteralValue;
 
 typedef struct
 {
-    size_t ndeps;
-    dtvm_word* deps;
-    dtvm_word ret;
-    dtvm_word len;
-    dtvm_word* code;
-} EnumLiteralValue;
-typedef struct
-{
-    size_t ndeps;
-    dtvm_word* deps;
-    dtvm_word nelems;
-    Value* values;
-} SliceLiteralValue;
-typedef struct
-{
-    size_t ndeps;
-    dtvm_word* deps;
-    dtvm_word ntypes;
-    dtvm_word* typeids;
-} TypeSliceLiteralValue;
+    dtvm_byte tid[4];
+    dtvm_byte depsptr[4];  // ?
+    dtvm_byte sliceptr[4];
+    dtvm_byte blockptr[4];
+} SliceValue;
 
+typedef struct
+{
+    dtvm_byte tid[4];
+    dtvm_byte depsptr[4];
+    dtvm_byte blockptr[4];
+    dtvm_byte padding[4];
+} CellValue;
+
+typedef struct
+{
+    dtvm_byte tid[4];
+    dtvm_byte depsptr[4];
+    dtvm_byte blockptr[4];
+    dtvm_byte padding[4];
+} TypeValue;
+
+typedef struct
+{
+    dtvm_byte tid[4];
+    dtvm_byte depsptr[4];
+    dtvm_byte ptr[4];
+    dtvm_byte padding[4];
+} PtrValue;
+
+// ???
+typedef struct
+{
+    dtvm_byte ptr[4];
+    dtvm_byte padding[4]; // MSB of [0] is 1 - host heap; 0 - virtual heap; next one is 1 - not null; 0 - null
+} HeapObjectValue;
+
+/*typedef struct
+{
+    dtvm_byte nodesz;
+    dtvm_byte nextptr;
+    dtvm_byte data[MAX_VHEAP_NODE_SIZE - 2];
+} VirtualHeapNodeValue;*/
 
 #endif

@@ -13,8 +13,12 @@ int main(int argc, char** argv)
 {
     DTVM dtvm;
     dtvm_word nprocesses = 1;
-    dtvm_word image[80] =
+    dtvm_byte image[80] =
     {
+        0,
+        OP_MOV, 10, 2,
+        OP_HALT
+    }/*{
         0,
         OP_MOV, htonl((AMODE_LIT << 24) | (AMODE_LIT << 16) | ARITY_2), 1, 2,
         OP_MOV, htonl((AMODE_LIT << 24) | (AMODE_LIT << 16) | ARITY_2), 2, htonl((AMODE_LIT << 24) | ARITY_1),
@@ -41,7 +45,7 @@ int main(int argc, char** argv)
         OP_NOP, htonl(ARITY_0),
         OP_NOP, htonl(ARITY_0),
         OP_HALT, htonl(ARITY_0)
-    };
+    }*/;
     dtvm_init(&dtvm, nprocesses);
 
     dtvm_word idx = dtvm_load(&dtvm, image, 80);
@@ -50,7 +54,7 @@ int main(int argc, char** argv)
     {
         printf("Error: %s\n", dtvm_get_signal_msg(result));
         printf("Near IP: %ld\n", curr_ip);
-        printf("Memcell: %ld\n", curr_ram[curr_ip]);
+        printf("Memcell: %d\n", curr_ram[curr_ip]);
     }
     //dtvm_join(dtvm);
     dtvm_unload(&dtvm, idx);

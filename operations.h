@@ -13,10 +13,11 @@ typedef enum
     OP_REPEAT,
     OP_CALL,
     OP_RET,
+    OP_RETN,
     OP_THROW,
     OP_CATCH,
     OP_MOV,
-    OP_MOVREGION,
+    OP_CPYREGION,
     OP_CPY,
     OP_LDR0,
     OP_LDR1,
@@ -29,79 +30,89 @@ typedef enum
     OP_STR3,
     OP_STRIDX,
     OP_SWP,
-    OP_TYPEOF,
-    OP_SIZEOF,
+    OP_SWPREGION,
+//    OP_TYPEOF,
+//    OP_SIZEOF,
+//    OP_NUMOF,
     OP_AT,
     OP_ATNOCHK,
     OP_SETAT,
     OP_SETATNOCHK,
-    OP_OFFSET
-    //OP_INIT
+    OP_OFFSET,
+    //OP_INIT,
+//    OP_SPEC,
+//    OP_TYPCHK,
+//    OP_TYPCHK_PEDANTIC
 } Mnemonic;
 
-DTVM_Signal op_nop(dtvm_word* args);
+DTVM_Signal op_nop(dtvm_byte* args);
 
-DTVM_Signal op_halt(dtvm_word* args);
+DTVM_Signal op_halt(dtvm_byte* args);
 
-DTVM_Signal op_jmp(dtvm_word* args);
+DTVM_Signal op_jmp(dtvm_byte* args);
 
-DTVM_Signal op_jmpshort(dtvm_word* args);
+DTVM_Signal op_jmpshort(dtvm_byte* args);
 
-DTVM_Signal op_repeat(dtvm_word* args);
+DTVM_Signal op_repeat(dtvm_byte* args);
 
-DTVM_Signal op_call(dtvm_word* args);
+DTVM_Signal op_call(dtvm_byte* args);
 
-DTVM_Signal op_ret(dtvm_word* args);
+DTVM_Signal op_ret(dtvm_byte* args);
 
-DTVM_Signal op_throw(dtvm_word* args);
+DTVM_Signal op_throw(dtvm_byte* args);
 
-DTVM_Signal op_catch(dtvm_word* args);
+DTVM_Signal op_catch(dtvm_byte* args);
 
-DTVM_Signal op_mov(dtvm_word* args);
+DTVM_Signal op_mov(dtvm_byte* args);
 
-DTVM_Signal op_movregion(dtvm_word* args);
+DTVM_Signal op_cpyregion(dtvm_byte* args);
 
-DTVM_Signal op_cpy(dtvm_word* args);
+DTVM_Signal op_cpy(dtvm_byte* args);
 
-DTVM_Signal op_ldr0(dtvm_word* args);
+DTVM_Signal op_ldr0(dtvm_byte* args);
 
-DTVM_Signal op_ldr1(dtvm_word* args);
+DTVM_Signal op_ldr1(dtvm_byte* args);
 
-DTVM_Signal op_ldr2(dtvm_word* args);
+DTVM_Signal op_ldr2(dtvm_byte* args);
 
-DTVM_Signal op_ldr3(dtvm_word* args);
+DTVM_Signal op_ldr3(dtvm_byte* args);
 
-DTVM_Signal op_ldridx(dtvm_word* args);
+DTVM_Signal op_ldridx(dtvm_byte* args);
 
-DTVM_Signal op_str0(dtvm_word* args);
+DTVM_Signal op_str0(dtvm_byte* args);
 
-DTVM_Signal op_str1(dtvm_word* args);
+DTVM_Signal op_str1(dtvm_byte* args);
 
-DTVM_Signal op_str2(dtvm_word* args);
+DTVM_Signal op_str2(dtvm_byte* args);
 
-DTVM_Signal op_str3(dtvm_word* args);
+DTVM_Signal op_str3(dtvm_byte* args);
 
-DTVM_Signal op_stridx(dtvm_word* args);
+DTVM_Signal op_stridx(dtvm_byte* args);
 
-DTVM_Signal op_swp(dtvm_word* args);
+DTVM_Signal op_swp(dtvm_byte* args);
 
-DTVM_Signal op_typeof(dtvm_word* args);
+DTVM_Signal op_swpregion(dtvm_byte* args);
+//DTVM_Signal op_typeof(dtvm_byte* args);
 
-DTVM_Signal op_sizeof(dtvm_word* args);
+//DTVM_Signal op_sizeof(dtvm_byte* args);
 
-DTVM_Signal op_at(dtvm_word* args);
+//DTVM_Signal op_numof(dtvm_byte* args);
 
-DTVM_Signal op_atnochk(dtvm_word* args);
+DTVM_Signal op_at(dtvm_byte* args);
 
-DTVM_Signal op_setat(dtvm_word* args);
+DTVM_Signal op_atnochk(dtvm_byte* args);
 
-DTVM_Signal op_setatnochk(dtvm_word* args);
+DTVM_Signal op_setat(dtvm_byte* args);
+
+DTVM_Signal op_setatnochk(dtvm_byte* args);
 
 // TODO: Can op_movregion be a good-enough low level replacement for this?
 
-DTVM_Signal op_offset(dtvm_word* args);
+DTVM_Signal op_offset(dtvm_byte* args);
 
-typedef DTVM_Signal (*DTVM_Instruction)(dtvm_word*);
+//DTVM_Signal op_spec(dtvm_byte* args);
+
+typedef DTVM_Signal (*DTVM_Instruction)(dtvm_byte*);
 extern DTVM_Instruction opcodes[NOPCODES];
 
 

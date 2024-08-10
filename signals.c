@@ -11,6 +11,7 @@ const char* dtvm_get_signal_msg(DTVM_Signal sig)
     case DTVM_NOADDR:  return "Attempted to access value at a non-existent address";
     case DTVM_NOREG:   return "Attempted to access non-existent register";
     case DTVM_ILLKND:  return "Wrong kind";
+    case DTVM_ILLTYP:  return "Wrong type";
     case DTVM_ILLIDX:  return "Specified index is out of bounds";
     case DTVM_NOSPACE: return "Not enough space";
     }
